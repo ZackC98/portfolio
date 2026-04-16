@@ -1,19 +1,20 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-  return projects.flatMap(project => {
-    const slug = project.slug ?? project.data.slug ?? project.id;
+  const modules = import.meta.glob('/src/content/projects/*.{md,mdx}', { eager: true });
+  return Object.entries(modules).flatMap(([path, mod]) => {
+    const typed = mod as { frontmatter?: Record<string, any>; default?: any };
+    const fileSlug = (path.split('/').pop() ?? '').replace(/\.(md|mdx)$/i, '');
+    const slug = String(typed.frontmatter?.slug ?? fileSlug);
     return slug
-      ? [{ params: { slug }, props: { project } }]
+      ? [{ params: { slug }, props: { project: { data: typed.frontmatter ?? {}, Content: typed.default } } }]
       : [];
   });
 }
 
 const { project } = Astro.props;
-const { Content } = await project.render();
+const Content = project.Content;
 
 function formatDate(date: Date | string) {
   return new Date(date).toLocaleDateString('en-AU', {
@@ -41,7 +42,7 @@ function formatDate(date: Date | string) {
 
     <div class="col">
       <article class="prose">
-        <Content />
+        {Content && <Content />}
       </article>
 
       {(project.data.liveUrl || project.data.githubUrl) && (
