@@ -2,14 +2,43 @@
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
-const projects = await getCollection('projects');
-const posts = await getCollection('posts');
+const collectionProjects = await getCollection('projects');
+const collectionPosts = await getCollection('posts');
 
-const sortedProjects = projects
+const projectModules = import.meta.glob('/src/content/projects/*.{md,mdx}', { eager: true });
+const postModules = import.meta.glob('/src/content/posts/*.{md,mdx}', { eager: true });
+
+const fallbackProjects = Object.entries(projectModules).map(([path, mod]) => {
+  const typedMod = mod as { frontmatter?: Record<string, any> };
+  const filename = path.split('/').pop() ?? '';
+  const fileSlug = filename.replace(/\.(md|mdx)$/i, '');
+  return {
+    slug: String(typedMod.frontmatter?.slug ?? fileSlug),
+    data: typedMod.frontmatter ?? {},
+  };
+});
+
+const fallbackPosts = Object.entries(postModules).map(([path, mod]) => {
+  const typedMod = mod as { frontmatter?: Record<string, any> };
+  const filename = path.split('/').pop() ?? '';
+  const fileSlug = filename.replace(/\.(md|mdx)$/i, '');
+  return {
+    slug: String(typedMod.frontmatter?.slug ?? fileSlug),
+    data: typedMod.frontmatter ?? {},
+  };
+});
+
+const projects = collectionProjects.length > 0 ? collectionProjects : fallbackProjects;
+const posts = collectionPosts.length > 0 ? collectionPosts : fallbackPosts;
+const getEntrySlug = (entry: { slug?: string; id?: string; data?: Record<string, any> }) =>
+  entry.slug ?? entry.data?.slug ?? entry.id;
+
+const nonFeaturedProjects = projects
   .filter(p => p.data.featured !== true)
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
 const featuredProject = projects.find(p => p.data.featured === true);
+const projectsForGrid = nonFeaturedProjects.length > 0 ? nonFeaturedProjects : projects;
 
 const recentPosts = posts
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
@@ -52,20 +81,20 @@ function formatDate(date: Date | string) {
           <span class="section-label">01</span>
           <span class="section-title">Anchor project</span>
         </div>
-        <a href={`/projects/${featuredProject.slug}`} style="display:block; text-decoration:none;">
+        <a href={`/project/${getEntrySlug(featuredProject)}`} style="display:block; text-decoration:none;">
           <div class="featured-card fade-up fade-up-2">
-            <div class="featured-label">Living project · {featuredProject.data.status}</div>
+            <div class="featured-label">Living project · {featuredProject.data.status ?? 'wip'}</div>
             <h2>{featuredProject.data.title}</h2>
-            <p class="card-summary">{featuredProject.data.summary}</p>
+            <p class="card-summary">{featuredProject.data.summary ?? ''}</p>
             <div class="featured-meta">
-              <span class={`badge badge-${featuredProject.data.status}`}>
-                {featuredProject.data.status}
+              <span class={`badge badge-${featuredProject.data.status ?? 'wip'}`}>
+                {featuredProject.data.status ?? 'wip'}
               </span>
               <span class="phase-indicator">
                 Phase <span>{featuredProject.data.phase ?? '1'}</span> of 4
               </span>
               <div class="stack-tags" style="margin-top:0;">
-                {featuredProject.data.stack.map((t: string) => (
+                {(featuredProject.data.stack ?? []).map((t: string) => (
                   <span class="tag">{t}</span>
                 ))}
               </div>
@@ -83,19 +112,19 @@ function formatDate(date: Date | string) {
       </div>
 
       <div class="projects-grid">
-        {sortedProjects.map(project => (
-          <a href={`/projects/${project.slug}`} style="text-decoration:none;">
+        {projectsForGrid.map(project => (
+          <a href={`/project/${getEntrySlug(project)}`} style="text-decoration:none;">
             <div class="project-card">
               <div class="card-top">
-                <span class={`badge badge-${project.data.status}`}>
-                  {project.data.status}
+                <span class={`badge badge-${project.data.status ?? 'wip'}`}>
+                  {project.data.status ?? 'wip'}
                 </span>
               </div>
               <div class="card-title">{project.data.title}</div>
-              <div class="card-summary">{project.data.summary}</div>
+              <div class="card-summary">{project.data.summary ?? ''}</div>
               <div class="card-bottom">
                 <div class="stack-tags">
-                  {project.data.stack.map((t: string) => (
+                  {(project.data.stack ?? []).map((t: string) => (
                     <span class="tag">{t}</span>
                   ))}
                 </div>
@@ -108,6 +137,9 @@ function formatDate(date: Date | string) {
           </a>
         ))}
       </div>
+      {projectsForGrid.length === 0 && (
+        <p style="margin-top: 1rem; color: var(--text2);">No projects loaded from content collection.</p>
+      )}
     </section>
 
     <!-- Build log -->
@@ -118,7 +150,7 @@ function formatDate(date: Date | string) {
       </div>
       <div class="post-list">
         {recentPosts.map(post => (
-          <a href={`/log/${post.slug}`} style="text-decoration:none;">
+          <a href={`/post/${getEntrySlug(post)}`} style="text-decoration:none;">
             <div class="post-item">
               <span class="post-date">{formatDate(post.data.date)}</span>
               <span class="post-title">{post.data.title}</span>

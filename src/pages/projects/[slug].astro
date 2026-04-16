@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.flatMap(project => {
+    const slug = project.slug ?? project.data.slug ?? project.id;
+    return slug
+      ? [{ params: { slug }, props: { project } }]
+      : [];
+  });
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+function formatDate(date: Date | string) {
+  return new Date(date).toLocaleDateString('en-AU', {
+    year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
+---
+
+<Base title={`${project.data.title} — Project`}>
+  <div class="container">
+    <div class="page-header">
+      <a href="/" class="back-link">← Home</a>
+      {project.data.status && (
+        <div style="margin-bottom: 1rem;">
+          <span class={`badge badge-${project.data.status}`}>
+            {project.data.status}
+          </span>
+        </div>
+      )}
+      <h1>{project.data.title}</h1>
+      <div class="page-meta" style="margin-top: 1rem;">
+        <span class="page-date">{formatDate(project.data.date)}</span>
+      </div>
+    </div>
+
+    <div class="col">
+      <article class="prose">
+        <Content />
+      </article>
+
+      {(project.data.liveUrl || project.data.githubUrl) && (
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+          {project.data.liveUrl && (
+            <a href={project.data.liveUrl} target="_blank" rel="noreferrer">Live ↗</a>
+          )}
+          {project.data.githubUrl && (
+            <a href={project.data.githubUrl} target="_blank" rel="noreferrer">GitHub ↗</a>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+</Base>

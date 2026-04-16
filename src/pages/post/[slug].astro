@@ -24,10 +24,8 @@ function formatDate(date: Date | string) {
 
 <Base title={`${post.data.title} — Build log`}>
   <div class="container">
-
     <div class="page-header">
-      <a href="/log" class="back-link">← Build log</a>
-
+      <a href="/" class="back-link">← Home</a>
       {post.data.outcome && (
         <div style="margin-bottom: 1rem;">
           <span class={`badge badge-${post.data.outcome}`}>
@@ -35,13 +33,11 @@ function formatDate(date: Date | string) {
           </span>
         </div>
       )}
-
       <h1>{post.data.title}</h1>
-
       <div class="page-meta" style="margin-top: 1rem;">
         <span class="page-date">{formatDate(post.data.date)}</span>
         {post.data.project && (
-          <a href={`/projects/${post.data.project}`}
+          <a href={`/project/${post.data.project}`}
              style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text3); letter-spacing: 0.05em;">
             → {post.data.project}
           </a>
@@ -54,6 +50,5 @@ function formatDate(date: Date | string) {
         <Content />
       </article>
     </div>
-
   </div>
 </Base>

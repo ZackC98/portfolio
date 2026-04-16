@@ -6,6 +6,8 @@ const posts = await getCollection('posts');
 const sorted = posts.sort((a, b) =>
   new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
 );
+const getEntrySlug = (entry: { slug?: string; id?: string; data?: Record<string, any> }) =>
+  entry.slug ?? entry.data?.slug ?? entry.id;
 
 function formatDate(date: Date | string) {
   return new Date(date).toLocaleDateString('en-AU', {
@@ -29,7 +31,7 @@ function formatDate(date: Date | string) {
     <div class="col">
       <div class="post-list">
         {sorted.map(post => (
-          <a href={`/log/${post.slug}`} style="text-decoration:none;">
+          <a href={`/log/${getEntrySlug(post)}`} style="text-decoration:none;">
             <div class="post-item">
               <span class="post-date">{formatDate(post.data.date)}</span>
               <span class="post-title">{post.data.title}</span>
