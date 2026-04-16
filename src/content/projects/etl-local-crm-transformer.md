@@ -4,7 +4,7 @@ description: "Offline ETL-style PowerShell tool for on-device processing of sens
 summary: "Offline PowerShell ETL pipeline that validates, normalises, and transforms Excel/CSV exports into CRM-ready CSV outputs via JSON profile rules for reliable local processing."
 date: "2026-04-15"
 slug: "local-etl-crm-data-transformer"
-status: "active"
+status: "#live"
 featured: true
 phase: 1
 stack: ["PowerShell", "Excel", "CSV", "JSON", "CRM", "Data Processing", "Automation"]
