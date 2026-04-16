@@ -1,43 +1,85 @@
-# Astro Starter Kit: Minimal
+# Portfolio
 
-```sh
-npm create astro@latest -- --template minimal
+Personal portfolio and build log. Built with Astro, deployed on Netlify.
+
+## Stack
+
+- **Framework** — Astro
+- **Styling** — Custom CSS (no framework)
+- **Fonts** — Syne (display), Newsreader (body), DM Mono (code)
+- **Deploy** — Netlify (auto-deploys on push to main)
+
+## Structure
+
+```
+src/
+  content/
+    projects/     ← one .md file per project
+    posts/        ← one .md file per build log entry
+  layouts/
+    Base.astro    ← wraps every page (nav, footer, cursor)
+  pages/
+    index.astro         ← homepage
+    projects/[slug].astro   ← individual project pages
+    log/index.astro         ← build log list
+    log/[slug].astro        ← individual log entries
+  styles/
+    global.css    ← all styles live here
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Adding a new project
 
-## 🚀 Project Structure
+1. Create a new file in `src/content/projects/your-project-name.md`
+2. Fill in the frontmatter (copy the template below)
+3. Write the content in Markdown
+4. Push to GitHub — Netlify auto-deploys
 
-Inside of your Astro project, you'll see the following folders and files:
+**Project frontmatter template:**
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```markdown
+---
+title: "Your project title"
+date: 2025-04-07
+status: wip          # live | wip | killed | archived
+summary: "One sentence. What it does and why it matters."
+stack: ["Python", "Streamlit"]
+featured: false      # true for the anchor project only
+liveUrl: ""          # optional
+githubUrl: ""        # optional
+---
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Adding a build log entry
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+1. Create a new file in `src/content/posts/your-entry-title.md`
+2. Fill in the frontmatter
+3. Write the entry
+4. Push to GitHub
 
-Any static assets, like images, can be placed in the `public/` directory.
+**Post frontmatter template:**
 
-## 🧞 Commands
+```markdown
+---
+title: "What happened and what I learned"
+date: 2025-04-07
+outcome: killed      # live | killed | wip | archived
+project: "project-slug"   # optional — links to a project
+summary: "One line summary shown in the list view"
+---
+```
 
-All commands are run from the root of the project, from a terminal:
+## Running locally
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```bash
+npm install
+npm run dev
+```
 
-## 👀 Want to learn more?
+Open `http://localhost:4321`
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Deploy
+
+Netlify auto-deploys on every push to `main`.
+
+For manual deploy, add your `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` 
+as GitHub repository secrets.

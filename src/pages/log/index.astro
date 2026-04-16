@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('posts');
+const sorted = posts.sort((a, b) =>
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+function formatDate(date: Date | string) {
+  return new Date(date).toLocaleDateString('en-AU', {
+    year: 'numeric', month: 'short', day: 'numeric'
+  });
+}
+---
+
+<Base title="Build log — YN">
+  <div class="container">
+
+    <div class="page-header">
+      <a href="/" class="back-link">← Home</a>
+      <h1>Build log</h1>
+      <p style="max-width: 500px; margin-top: 0.75rem; color: var(--text2);">
+        Every build, every decision, every kill. Honest write-ups of what 
+        happened and what I'd do differently.
+      </p>
+    </div>
+
+    <div class="col">
+      <div class="post-list">
+        {sorted.map(post => (
+          <a href={`/log/${post.slug}`} style="text-decoration:none;">
+            <div class="post-item">
+              <span class="post-date">{formatDate(post.data.date)}</span>
+              <span class="post-title">{post.data.title}</span>
+              <span class={`badge badge-${post.data.outcome ?? 'wip'} post-status`}>
+                {post.data.outcome ?? 'wip'}
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</Base>

@@ -1,17 +1,168 @@
 ---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
 
+const projects = await getCollection('projects');
+const posts = await getCollection('posts');
+
+const sortedProjects = projects
+  .filter(p => p.data.featured !== true)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const featuredProject = projects.find(p => p.data.featured === true);
+
+const recentPosts = posts
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 5);
+
+function formatDate(date: Date | string) {
+  return new Date(date).toLocaleDateString('en-AU', {
+    year: 'numeric', month: 'short', day: 'numeric'
+  });
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base>
+  <div class="container">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-eyebrow fade-up fade-up-1">
+        Learning in public · IC & SA track
+      </div>
+      <h1 class="fade-up fade-up-2">
+        Building the skills.<br/>
+        <em>Showing the work.</em>
+      </h1>
+      <p class="hero-sub fade-up fade-up-3">
+        Twelve months of structured learning in implementation consulting and 
+        solutions architecture. Every project, every failure, every decision — documented here.
+      </p>
+      <div class="hero-meta fade-up fade-up-4">
+        <span>Based in <span>Sydney, AU</span></span>
+        <span>Started <span>Apr 2025</span></span>
+        <span>Stack <span>Python · SQL · Workflows</span></span>
+      </div>
+    </section>
+
+    <!-- Featured / Anchor project -->
+    {featuredProject && (
+      <section style="margin-bottom: 4rem;">
+        <div class="section-header">
+          <span class="section-label">01</span>
+          <span class="section-title">Anchor project</span>
+        </div>
+        <a href={`/projects/${featuredProject.slug}`} style="display:block; text-decoration:none;">
+          <div class="featured-card fade-up fade-up-2">
+            <div class="featured-label">Living project · {featuredProject.data.status}</div>
+            <h2>{featuredProject.data.title}</h2>
+            <p class="card-summary">{featuredProject.data.summary}</p>
+            <div class="featured-meta">
+              <span class={`badge badge-${featuredProject.data.status}`}>
+                {featuredProject.data.status}
+              </span>
+              <span class="phase-indicator">
+                Phase <span>{featuredProject.data.phase ?? '1'}</span> of 4
+              </span>
+              <div class="stack-tags" style="margin-top:0;">
+                {featuredProject.data.stack.map((t: string) => (
+                  <span class="tag">{t}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </a>
+      </section>
+    )}
+
+    <!-- Mini projects grid -->
+    <section style="margin-bottom: 5rem;">
+      <div class="section-header">
+        <span class="section-label">02</span>
+        <span class="section-title">Projects</span>
+      </div>
+
+      <div class="projects-grid">
+        {sortedProjects.map(project => (
+          <a href={`/projects/${project.slug}`} style="text-decoration:none;">
+            <div class="project-card">
+              <div class="card-top">
+                <span class={`badge badge-${project.data.status}`}>
+                  {project.data.status}
+                </span>
+              </div>
+              <div class="card-title">{project.data.title}</div>
+              <div class="card-summary">{project.data.summary}</div>
+              <div class="card-bottom">
+                <div class="stack-tags">
+                  {project.data.stack.map((t: string) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </div>
+                <div class="card-links">
+                  {project.data.liveUrl && <span>Live ↗</span>}
+                  {project.data.githubUrl && <span>GitHub ↗</span>}
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Build log -->
+    <section style="margin-bottom: 5rem;">
+      <div class="section-header">
+        <span class="section-label">03</span>
+        <span class="section-title">Build log</span>
+      </div>
+      <div class="post-list">
+        {recentPosts.map(post => (
+          <a href={`/log/${post.slug}`} style="text-decoration:none;">
+            <div class="post-item">
+              <span class="post-date">{formatDate(post.data.date)}</span>
+              <span class="post-title">{post.data.title}</span>
+              <span class={`badge badge-${post.data.outcome ?? 'wip'} post-status`}>
+                {post.data.outcome ?? 'wip'}
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div style="margin-top: 1.5rem;">
+        <a href="/log" style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text3); letter-spacing: 0.05em; transition: color 0.15s;">
+          All entries →
+        </a>
+      </div>
+    </section>
+
+    <!-- About strip -->
+    <div class="about-strip">
+      <div>
+        <h2>What I'm learning</h2>
+        <ul class="skill-list">
+          <li>SQL — querying, joining, analysing real datasets</li>
+          <li>Python — pandas, APIs, automation scripts</li>
+          <li>Workflows — n8n, Make, GitHub Actions</li>
+          <li>Diagramming — Mermaid, system + process maps</li>
+          <li>Documentation — technical writing for humans</li>
+          <li>AI integration — Claude API, prompt engineering</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Why this format</h2>
+        <p style="font-size: 0.95rem;">
+          This isn't a highlight reel. Every project here — 
+          whether it shipped, stalled, or got killed — gets an honest 
+          write-up. What I built, what broke, what I'd do differently.
+        </p>
+        <p style="font-size: 0.95rem;">
+          The goal is IC roles ultamately working towards SA. These roles need people who 
+          can read a situation, make a call, and learn fast. 
+          That's what I'm practising here.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</Base>
