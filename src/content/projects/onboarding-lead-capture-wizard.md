@@ -3,7 +3,7 @@ title: "Onboarding Lead Capture Wizard"
 description: "Frontend onboarding flow that captures lead data and submits it through a secure API to a backend database with validation, rate limiting, and audit logging."
 date: "2026-04-16"
 slug: "onboarding-lead-capture-wizard"
-status: "Live"
+status: "archvied"
 summary: "Multi-step lead capture form with secure API ingestion, server-side validation, and durable storage for sales and onboarding workflows."
 phase: 2
 stack: ["JavaScript", "React", "Form Validation", "REST API", "PostgreSQL", "Security", "Automation"]
