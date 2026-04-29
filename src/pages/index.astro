@@ -113,28 +113,23 @@ function formatDate(date: Date | string) {
 
       <div class="projects-grid">
         {projectsForGrid.map(project => (
-          <a href={`/project/${getEntrySlug(project)}`} style="text-decoration:none;">
-            <div class="project-card">
-              <div class="card-top">
-                <span class={`badge badge-${project.data.status ?? 'wip'}`}>
-                  {project.data.status ?? 'wip'}
-                </span>
-              </div>
-              <div class="card-title">{project.data.title}</div>
-              <div class="card-summary">{project.data.summary ?? ''}</div>
-              <div class="card-bottom">
-                <div class="stack-tags">
-                  {(project.data.stack ?? []).map((t: string) => (
-                    <span class="tag">{t}</span>
-                  ))}
-                </div>
-                <div class="card-links">
-                  {project.data.liveUrl && <span>Live ↗</span>}
-                  {project.data.githubUrl && <span>GitHub ↗</span>}
-                </div>
-              </div>
+          <div class="project-card">
+            <div class="card-top">
+              <span class={`badge badge-${project.data.status ?? 'wip'}`}>
+                {project.data.status ?? 'wip'}
+              </span>
             </div>
-          </a>
+            <div class="card-title">{project.data.title}</div>
+            <div class="card-summary">{project.data.summary ?? ''}</div>
+            <div class="card-bottom">
+              <div class="stack-tags">
+                {(project.data.stack ?? []).map((t: string) => (
+                  <span class="tag">{t}</span>
+                ))}
+              </div>
+              <a href={`/project/${getEntrySlug(project)}`} class="card-read-more">Read more →</a>
+            </div>
+          </div>
         ))}
       </div>
       {projectsForGrid.length === 0 && (

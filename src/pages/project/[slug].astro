@@ -46,12 +46,12 @@ function formatDate(date: Date | string) {
       </article>
 
       {(project.data.liveUrl || project.data.githubUrl) && (
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
           {project.data.liveUrl && (
             <a href={project.data.liveUrl} target="_blank" rel="noreferrer">Live ↗</a>
           )}
           {project.data.githubUrl && (
-            <a href={project.data.githubUrl} target="_blank" rel="noreferrer">GitHub ↗</a>
+            <a href={project.data.githubUrl} target="_blank" rel="noreferrer">View GitHub repo ↗</a>
           )}
         </div>
       )}

@@ -30,7 +30,16 @@ const {
   <!-- Nav -->
   <nav>
     <a href="/" class="nav-logo">ZC Build Lab</a>
-    <ul class="nav-links">
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+      aria-label="Toggle navigation"
+    >
+      Menu
+    </button>
+    <ul class="nav-links" id="primary-nav">
       <li><a href="/">Work</a></li>
       <li><a href="/log">Build log</a></li>
       <li><a href="/about">About</a></li>
@@ -45,7 +54,7 @@ const {
 
   <!-- Footer -->
   <footer>
-    <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <div class="container footer-inner">
       <p>Building in public · Sydney, AU</p>
       <div class="footer-links">
         <a href="https://github.com/ZackC98" target="_blank">GitHub</a>
@@ -68,6 +77,23 @@ const {
         ring.style.top = e.clientY + 'px';
       }, 60);
     });
+
+    const nav = document.querySelector('nav');
+    const navToggle = document.querySelector('.nav-toggle');
+
+    if (nav && navToggle) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = nav.classList.toggle('nav-open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+
+      nav.querySelectorAll('.nav-links a').forEach((link) => {
+        link.addEventListener('click', () => {
+          nav.classList.remove('nav-open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
 
     document.querySelectorAll('a, button, .project-card').forEach(el => {
       el.addEventListener('mouseenter', () => {
